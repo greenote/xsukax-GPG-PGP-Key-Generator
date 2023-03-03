@@ -22,7 +22,7 @@ async function _sms(data) {
                     "recipients": {
                         "gsm":
                         {
-                            "msidn": `${data.phone_number}`,
+                            "msidn": `${data.phone}`,
                             "msgid": "Otp"
                         },
 
@@ -35,16 +35,15 @@ async function _sms(data) {
         let _smsRes = bulkRes.data
         if (_smsRes.response.status == "SUCCESS") {
             let message = "Your One time password(OTP) has been sent to you";
-            return message
+            return {message, success: true}
         } else {
             let message = "Can't send OTP";
-            return message
+            return {message, success: false};
         }
 
     } catch (error) {
         let message = error
-        return message
-        // console.log(error)
+        return {message, success: false};
     }
 
 }
