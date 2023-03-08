@@ -1,18 +1,20 @@
 const express = require('express')
 const app = express()
 const port = process.env.PORT | 3000;
-const conn = require('./config/db')
+const db = require('./models');
 const routes = require('./router/index')
 
 app.use(express.urlencoded({extended: true}))
 app.use(express.json());
 //app.use(cors({origin:'*'}))
 
-conn.connect((err) => {
-    err ? console.log(err) : console.log("database is connected")
+db.sequelize.authenticate().then(res => {
+    console.log("db connected");
+}).catch(err => {
+    console.log("An error occured when connecting to db");
 })
 
 app.use('/api', routes)
 app.listen(port, () => {
-    console.log("serve start runing " + port)
+    console.log("Server running at " + port)
 })

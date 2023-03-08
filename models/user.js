@@ -22,6 +22,19 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'User',
+    defaultScope: {
+      attributes: {
+        exclude: ['token']
+      },
+      // order: [['id', 'phone']]
+    },
+    scopes: {
+      withToken: {
+        attributes: {
+          include: ['token']
+        }
+      }
+    }
   });
   return User;
 };

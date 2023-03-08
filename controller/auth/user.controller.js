@@ -1,18 +1,22 @@
 const jwt = require('jsonwebtoken')
 const db = require("../../models");
+const Joi = require("joi");
 const {_sms} = require('../../utilities/bulksms');
+const {validationFails} = require('../../utilities/requestVal');
 
 const register = async (req, res) => {
-	const {name, phone} = req.body;
-
+	const schema = Joi.object({
+		name: Joi.string().required().max(30).lowercase(),
+		phone: Joi.string().required().max(15).replace('/\s/g', ''),
+	}).unknown();
 	//validate name and phone
-	if (!(name && phone)) {
-		return res.status(400).json({
-			message: "Name and phone is required",
-			success: false,
-			error: true
-		})
-	}
+	const {value: {name, phone}, error} = schema.validate({
+		name: req.body.name,
+		phone: req.body.phone,
+	});
+
+	if (error) return validationFails(res, error);
+	// return res.json({name, phone})
 
 	try {
 		// check if user exist before
@@ -27,12 +31,12 @@ const register = async (req, res) => {
 				expire_time: currentminute + 3 * 6000,
 			}
 
-			const updatedUser = await updateUserAndSMS(updatedObj, userExist);
-			if (!updatedUser.success) {
-				return res.status(500).json(updatedUser);
+			const response = await updateUserAndSMS(updatedObj, userExist);
+			if (!response.success) {
+				return res.status(500).json(response);
 			}
 
-			return res.status(200).json(updatedUser);
+			return res.status(200).json(response);
 		}
 
 		// create new acount if user does not exist before
@@ -47,7 +51,6 @@ const register = async (req, res) => {
 		console.log(_error);
 		return res.status(500).json({
 			message: "An error occured when trying to confirm user",
-			error: true,
 			success: false
 		})
 	}
@@ -75,12 +78,12 @@ const newAcct = async ({name, phone}) => {
 		response = {
 			success: true,
 			message: "User Registration Successful",
-			smsResponse: smsResponse.message
+			smsResponse: smsResponse.message,
+			data: {phone, id: _user.id}
 		}
 	}).catch(_error => {
 		response = {
 			success: false,
-			error: true,
 			message: "An error occured when inserting new user details"
 		}
 	})
@@ -96,15 +99,14 @@ const updateUserAndSMS = async (updatedObj, {id, phone}) => {
 		const smsResponse = await _sms({phone, token: updatedObj.token})
 		response = {
 			success: true,
-			error: false,
 			message: `Welcome back`,
-			smsResponse: smsResponse.message
+			smsResponse: smsResponse.message,
+			data: {phone, id}
 		}
 
 	}).catch(_error => {
 		response = {
 			message: "An error occured when trying to update user",
-			error: true,
 			success: false
 		};
 	})
@@ -112,4 +114,66 @@ const updateUserAndSMS = async (updatedObj, {id, phone}) => {
 	return response
 }
 
-module.exports = {register}
+// confirmation of otp###
+const confirmOtpAndVerify = async (req, res) => {
+	let {token, id} = req.body
+
+	//getting the current minute##
+	let currentDateObj = new Date();
+	let currentminute = currentDateObj.getTime();
+	try {
+		const user = await db.User.findOne({where: {token, id}});
+		if (!user) {
+			return res.status(400).json({
+				message: 'Invalid OTP',
+				success: false
+			})
+		}
+
+		if (currentminute > Number(user.expire_time)) {
+			return res.status(400).json({
+				message: 'The (OTP) code has expired',
+				success: false
+			})
+		}
+
+		user.set({status: "verified"});
+		return user.save().then(user => {
+			return res.status(200).json({
+				data: user,
+				message: 'Account Created Successfully',
+				succuss: true
+			})
+		}).catch(error => {
+			return res.status(200).json({
+				success: false,
+				message: "An error occured when marking user as verified"
+			})
+		});
+
+	} catch (error) {
+		return res.status(500).send({
+			success: false,
+			message: "An error occured when confirming user details"
+		})
+	}
+}
+
+const resendOtp = async (req, res) => {
+	let {id, phone} = req.body
+	const currentminute = new Date().getTime();
+	const updatedObj = {
+		token: Math.floor(Math.random() * 90000) + 10000,
+		status: "unverified",
+		expire_time: currentminute + 3 * 6000,
+	}
+
+	const response = await updateUserAndSMS(updatedObj, {id, phone});
+	if (!response.success) {
+		return res.status(500).json(response);
+	}
+
+	return res.status(200).json(response);
+}
+
+module.exports = {register, confirmOtpAndVerify, resendOtp}
