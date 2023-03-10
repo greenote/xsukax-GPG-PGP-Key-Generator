@@ -1,5 +1,5 @@
 const validationFails = (res, error) => {
-	return res.status(400).json({
+	return res.status(422).json({
 		message: error.message,
 		success: false,
 		error: error,

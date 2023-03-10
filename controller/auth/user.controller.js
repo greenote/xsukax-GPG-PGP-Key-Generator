@@ -1,22 +1,12 @@
-const jwt = require('jsonwebtoken')
 const db = require("../../models");
 const Joi = require("joi");
 const {_sms} = require('../../utilities/bulksms');
 const {validationFails} = require('../../utilities/requestVal');
+const {userSchema} = require('../../utilities/schemas');
 
 const register = async (req, res) => {
-	const schema = Joi.object({
-		name: Joi.string().required().max(30).lowercase(),
-		phone: Joi.string().required().max(15).replace('/\s/g', ''),
-	}).unknown();
-	//validate name and phone
-	const {value: {name, phone}, error} = schema.validate({
-		name: req.body.name,
-		phone: req.body.phone,
-	});
-
+	const {value: {name, phone}, error} = userSchema.validate(req.body);
 	if (error) return validationFails(res, error);
-	// return res.json({name, phone})
 
 	try {
 		// check if user exist before
@@ -48,7 +38,6 @@ const register = async (req, res) => {
 		return res.status(200).json(newUser)
 
 	} catch (_error) {
-		console.log(_error);
 		return res.status(500).json({
 			message: "An error occured when trying to confirm user",
 			success: false
