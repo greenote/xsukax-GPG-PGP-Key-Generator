@@ -1,15 +1,17 @@
 const Joi = require("joi");
-const {validationFails} = require("./requestVal");
 
 const schemas = {
-	userSchema: Joi.object({
+	userHeaderSchema: Joi.object({
+		userid: Joi.number().max(30).required(),
+	}).unknown(),
+	userRegSchema: Joi.object({
 		name: Joi.string().max(30).trim().lowercase().required(),
 		phone: Joi.string().max(15).trim().replace('/\s/g', '').required(),
 	}),
 	connSchema: Joi.object().keys({
-		fromId: Joi.string().max(30).trim().required(),
-		toId: Joi.string().max(30).trim().required(),
-	})
+		fromId: Joi.number().max(30).required(),
+		toId: Joi.number().max(30).required(),
+	}).unknown(),
 }
 
 module.exports = schemas

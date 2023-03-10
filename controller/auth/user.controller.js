@@ -2,10 +2,10 @@ const db = require("../../models");
 const Joi = require("joi");
 const {_sms} = require('../../utilities/bulksms');
 const {validationFails} = require('../../utilities/requestVal');
-const {userSchema} = require('../../utilities/schemas');
+const {userRegSchema} = require('../../utilities/schemas');
 
 const register = async (req, res) => {
-	const {value: {name, phone}, error} = userSchema.validate(req.body);
+	const {value: {name, phone}, error} = userRegSchema.validate(req.body);
 	if (error) return validationFails(res, error);
 
 	try {
