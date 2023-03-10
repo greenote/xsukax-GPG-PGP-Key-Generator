@@ -74,10 +74,11 @@ const getMyConnectionRequests = async (req, res) => {
 			where: {
 				toId: userId,
 				status: 0
-			}
+			},
+			include: ['from']
 		});
 		return res.status(200).json({
-			message: "Connection accepted",
+			message: "Successful",
 			success: true,
 			data: requests
 		})
