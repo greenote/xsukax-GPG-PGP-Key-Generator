@@ -16,14 +16,20 @@ module.exports = {
       senderId: {
         type: Sequelize.INTEGER,
         references: {model: 'Users', key: 'id'},
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION',
+        onUpdate: 'NO ACTION',
       },
       receiverId: {
         type: Sequelize.INTEGER,
         references: {model: 'Users', key: 'id'},
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION',
+        onUpdate: 'NO ACTION',
+      },
+      userConnectionId: {
+        type: Sequelize.INTEGER,
+        references: {model: 'UserConnections', key: 'id'},
+        onDelete: 'NO ACTION',
+        onUpdate: 'NO ACTION',
       },
       createdAt: {
         allowNull: false,
