@@ -31,6 +31,12 @@ module.exports = {
         onDelete: 'NO ACTION',
         onUpdate: 'NO ACTION',
       },
+      categoryId: {
+        type: Sequelize.INTEGER,
+        references: {model: 'Categories', key: 'id'},
+        onDelete: 'NO ACTION',
+        onUpdate: 'NO ACTION',
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

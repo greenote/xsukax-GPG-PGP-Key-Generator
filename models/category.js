@@ -14,9 +14,9 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Category.init({
-    category_type: DataTypes.STRING,
-    connection_id: DataTypes.STRING
-
+    name: DataTypes.STRING,
+    description: DataTypes.STRING,
+    userConnectionId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Category',
