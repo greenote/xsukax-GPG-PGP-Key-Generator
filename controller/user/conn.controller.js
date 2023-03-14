@@ -4,7 +4,7 @@ const {validationFails} = require("../../utilities/requestVal");
 const schemas = require("../../utilities/schemas");
 
 const newConnection = async (req, res) => {
-	const {value: {toId}, error} = schemas.toId.validate(req.body);
+	const {value: {toId}, error} = schemas.toId.validate(req.query);
 	if (error) return validationFails(res, error);
 	const {userId} = req.user; // set in user.middleware
 
@@ -57,7 +57,7 @@ const newConnection = async (req, res) => {
 }
 
 const acceptConnection = async (req, res) => {
-	const {value: {fromId}, error} = schemas.fromId.validate(req.body);
+	const {value: {fromId}, error} = schemas.fromId.validate(req.query);
 	if (error) return validationFails(res, error);
 	const {userId} = req.user;
 	try {

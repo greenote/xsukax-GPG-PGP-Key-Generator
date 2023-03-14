@@ -5,6 +5,11 @@ const schemas = {
 		userid: Joi.number().max(10).required(),
 	}).unknown(),
 
+	confirmOTP: Joi.object().keys({
+		otp: Joi.number().required(),
+		userId: Joi.number().required(),
+	}),
+
 	userRegSchema: Joi.object({
 		name: Joi.string().max(30).trim().lowercase().required(),
 		phone: Joi.string().max(15).trim().replace('/\s/g', '').required(),
@@ -21,7 +26,13 @@ const schemas = {
 
 	fromId: Joi.object().keys({
 		fromId: Joi.number().max(10).required(),
-	})
+	}),
+
+	phoneSc: Joi.object().keys({
+		phone: Joi.string().max(15).required(),
+	}),
+
+
 }
 
 module.exports = schemas

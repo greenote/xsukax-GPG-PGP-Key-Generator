@@ -9,8 +9,8 @@ router.post('/confirm-otp', Auth.confirmOtpAndVerify);
 router.post('/resend-otp', Auth.resendOtp);
 
 router.post('/connection-request', UserM.userMiddleware, Conn.newConnection);
-router.post('/connection-request/get', UserM.userMiddleware, Conn.getMyConnectionRequests);
-router.post('/connections', UserM.userMiddleware, Conn.myConnections);
+router.get('/connection-request/get', UserM.userMiddleware, Conn.getMyConnectionRequests);
+router.get('/connections', UserM.userMiddleware, Conn.myConnections);
 router.post('/connection-request/accept', UserM.userMiddleware, Conn.acceptConnection);
 
 module.exports = router

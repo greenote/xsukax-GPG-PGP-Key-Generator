@@ -2,7 +2,7 @@ const db = require("../../models");
 const Joi = require("joi");
 const {_sms} = require('../../utilities/bulksms');
 const {validationFails} = require('../../utilities/requestVal');
-const {userRegSchema} = require('../../utilities/schemas');
+const {userRegSchema, confirmOTP, phoneSc} = require('../../utilities/schemas');
 
 const register = async (req, res) => {
 	const {value: {name, phone}, error} = userRegSchema.validate(req.body);
@@ -82,36 +82,52 @@ const newAcct = async ({name, phone}) => {
 
 const updateUserAndSMS = async (updatedObj, {id, phone}) => {
 	let response = {}
-
-	await db.User.update(updatedObj, {where: {id}}).then(async _user => {
-		// send token through sms
-		const smsResponse = await _sms({phone, token: updatedObj.token})
-		response = {
-			success: true,
-			message: `Welcome back`,
-			smsResponse: smsResponse.message,
-			data: {phone, id}
+	try {
+		const user = await db.User.findOne({where: id ? {id} : {phone}})
+		if (!user) {
+			return {
+				message: "Can't find user details",
+				success: false
+			};
 		}
+		user.set(updatedObj)
+		await user.save().then(async _user => {
+			// send token through sms
+			const smsResponse = await _sms({phone, token: updatedObj.token})
+			response = {
+				success: true,
+				message: `Welcome back`,
+				smsResponse: smsResponse.message,
+				data: {phone, id}
+			}
 
-	}).catch(_error => {
+		}).catch(_error => {
+			response = {
+				message: "An error occured when trying to update user",
+				success: false
+			};
+		})
+	} catch (error) {
+		console.log(error);
 		response = {
-			message: "An error occured when trying to update user",
+			message: "An error occured when trying to get user details",
 			success: false
 		};
-	})
+	}
 
 	return response
 }
 
 // confirmation of otp###
 const confirmOtpAndVerify = async (req, res) => {
-	let {token, id} = req.body
+	const {value: {otp, userId}, error} = confirmOTP.validate(req.body);
+	if (error) return validationFails(res, error);
 
 	//getting the current minute##
 	let currentDateObj = new Date();
 	let currentminute = currentDateObj.getTime();
 	try {
-		const user = await db.User.findOne({where: {token, id}});
+		const user = await db.User.findOne({where: {token: otp, id: userId}});
 		if (!user) {
 			return res.status(400).json({
 				message: 'Invalid OTP',
@@ -130,7 +146,7 @@ const confirmOtpAndVerify = async (req, res) => {
 		return user.save().then(user => {
 			return res.status(200).json({
 				data: user,
-				message: 'Account Created Successfully',
+				message: 'Account Verified Successfully',
 				succuss: true
 			})
 		}).catch(error => {
@@ -149,7 +165,9 @@ const confirmOtpAndVerify = async (req, res) => {
 }
 
 const resendOtp = async (req, res) => {
-	let {id, phone} = req.body
+	const {value: {phone}, error} = phoneSc.validate(req.body);
+	if (error) return validationFails(res, error);
+
 	const currentminute = new Date().getTime();
 	const updatedObj = {
 		token: Math.floor(Math.random() * 90000) + 10000,
@@ -157,7 +175,7 @@ const resendOtp = async (req, res) => {
 		expire_time: currentminute + 3 * 6000,
 	}
 
-	const response = await updateUserAndSMS(updatedObj, {id, phone});
+	const response = await updateUserAndSMS(updatedObj, {phone});
 	if (!response.success) {
 		return res.status(500).json(response);
 	}

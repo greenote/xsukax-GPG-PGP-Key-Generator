@@ -8,7 +8,7 @@ app.use(express.urlencoded({extended: true}))
 app.use(express.json());
 //app.use(cors({origin:'*'}))
 
-db.sequelize.authenticate().then(res => {
+db.sequelize.authenticate().then(() => {
     console.log("db connected");
 }).catch(err => {
     console.log("An error occured when connecting to db");
