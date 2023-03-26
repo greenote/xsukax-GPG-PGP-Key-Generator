@@ -75,6 +75,25 @@ const acceptConnection = async (req, res) => {
 	}
 }
 
+const rejectConnection = async (req, res) => {
+	const {value: {fromId}, error} = schemas.fromId.validate(req.query);
+	if (error) return validationFails(res, error);
+	const {userId} = req.user;
+	try {
+		await db.UserConnection.update({status: 2}, {where: {fromId, toId: userId}})
+		return res.status(200).json({
+			message: "Connection rejected",
+			success: true,
+		})
+	} catch (error) {
+		console.log(error);
+		return res.status(500).json({
+			message: "An error occured when rejecting connection request",
+			success: false
+		});
+	}
+}
+
 const getMyConnectionRequests = async (req, res) => {
 	const {userId} = req.user;
 	try {
@@ -94,6 +113,29 @@ const getMyConnectionRequests = async (req, res) => {
 		console.log(error);
 		return res.status(500).json({
 			message: "An error occured when getting pending request",
+			success: false
+		});
+	}
+}
+
+const getMySentConnectionRequests = async (req, res) => {
+	const {userId} = req.user;
+	try {
+		const requests = await db.UserConnection.findAll({
+			where: {
+				fromId: userId,
+			},
+			include: ['to']
+		});
+		return res.status(200).json({
+			message: "Successful",
+			success: true,
+			data: requests
+		})
+	} catch (error) {
+		console.log(error);
+		return res.status(500).json({
+			message: "An error occured when getting sent request",
 			success: false
 		});
 	}
@@ -119,10 +161,10 @@ const myConnections = async (req, res) => {
 		})
 	} catch (error) {
 		return res.status(500).json({
-			message: "An error occured when getting pending request",
+			message: "An error occured when getting connected users",
 			success: false
 		});
 	}
 }
 
-module.exports = {newConnection, acceptConnection, getMyConnectionRequests, myConnections}
+module.exports = {newConnection, acceptConnection, getMyConnectionRequests, myConnections, getMySentConnectionRequests, rejectConnection}

@@ -13,7 +13,9 @@ router.get('/all-users', User.getAllUsers);
 
 router.post('/connection-request', UserM.userMiddleware, Conn.newConnection);
 router.get('/connection-request/get', UserM.userMiddleware, Conn.getMyConnectionRequests);
+router.get('/sent-connection-requests/get', UserM.userMiddleware, Conn.getMySentConnectionRequests);
 router.get('/connections', UserM.userMiddleware, Conn.myConnections);
 router.post('/connection-request/accept', UserM.userMiddleware, Conn.acceptConnection);
+router.post('/connection-request/reject', UserM.userMiddleware, Conn.rejectConnection);
 
 module.exports = router
