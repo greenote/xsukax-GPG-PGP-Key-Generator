@@ -4,6 +4,7 @@ const Auth = require('../controller/auth/user.controller');
 const User = require('../controller/user');
 const Conn = require('../controller/user/conn.controller');
 const UserM = require('../middlewares/user.middleware');
+const Categories = require('../controller/categories/categoryController')
 
 router.post('/register', Auth.register);
 router.post('/confirm-otp', Auth.confirmOtpAndVerify);
@@ -17,5 +18,9 @@ router.get('/sent-connection-requests/get', UserM.userMiddleware, Conn.getMySent
 router.get('/connections', UserM.userMiddleware, Conn.myConnections);
 router.post('/connection-request/accept', UserM.userMiddleware, Conn.acceptConnection);
 router.post('/connection-request/reject', UserM.userMiddleware, Conn.rejectConnection);
+
+//categories routes
+router.post('/new-categories', Categories.createCategory)
+
 
 module.exports = router

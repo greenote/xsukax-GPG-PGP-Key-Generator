@@ -32,6 +32,12 @@ const schemas = {
 		phone: Joi.string().max(15).required(),
 	}),
 
+	categoriesVal: Joi.object().keys({
+		name: Joi.string().max(30).trim().lowercase().required(),
+		userConnectionId: Joi.number().required(),
+		description: Joi.string().max(20).required()
+	})
+
 
 }
 
