@@ -7,6 +7,7 @@ const newConnection = async (req, res) => {
 	const {value: {toId}, error} = schemas.toId.validate(req.query);
 	if (error) return validationFails(res, error);
 	const {userId} = req.user; // set in user.middleware
+	console.log(userId)
 
 	if (toId == userId) {
 		return res.status(422).json({
@@ -41,6 +42,7 @@ const newConnection = async (req, res) => {
 				data: connection
 			})
 		}).catch(err => {
+			//console.log(err)
 			return res.status(500).json({
 				message: "An error occured when creating connecting request",
 				success: false,

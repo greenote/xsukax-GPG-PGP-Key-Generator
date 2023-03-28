@@ -21,6 +21,6 @@ router.post('/connection-request/reject', UserM.userMiddleware, Conn.rejectConne
 
 //categories routes
 router.post('/new-categories', Categories.createCategory)
-
+router.get('/category-per-user/:id', Categories.categoriesPerUser)
 
 module.exports = router
