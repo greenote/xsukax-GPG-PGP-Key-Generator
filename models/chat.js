@@ -13,13 +13,15 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Chat.belongsTo(models.User, {as: 'sender', foreignKey: 'senderId'});
       Chat.belongsTo(models.User, {as: 'receiver', foreignKey: 'receiverId'});
+
     }
   }
   Chat.init({
     message: DataTypes.STRING,
     senderId: DataTypes.INTEGER,
     receiverId: DataTypes.INTEGER,
-    categoryId: DataTypes.INTEGER
+    categoryId: DataTypes.INTEGER,
+    userConnectionId:DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Chat',

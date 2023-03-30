@@ -4,8 +4,6 @@ const allUsers = []
 
 //up
 
-// gg();
-
 const socket = (io)=>{
     io.on('connection', (socket)=>{
         console.log("user connect");

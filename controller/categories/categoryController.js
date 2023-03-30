@@ -20,13 +20,13 @@ const createCategory = async (req, res) =>{
         return res.status(500).send({
 			success: false,
             error,
-			message: "An error occured when creating categories"
+			message: "An error occured while creating categories"
 		})
     }
 
 }
 
-// getting of categories per  users connection #
+// getting of categories perUser connection #
 const categoriesPerUser = async (req,res) =>{
     const {id} = req.params
     try {
@@ -51,7 +51,7 @@ const categoriesPerUser = async (req,res) =>{
 		})
     }
 }
-
+// chats per cetegories
 
 
 module.exports = {createCategory, categoriesPerUser}

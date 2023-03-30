@@ -5,6 +5,7 @@ const User = require('../controller/user');
 const Conn = require('../controller/user/conn.controller');
 const UserM = require('../middlewares/user.middleware');
 const Categories = require('../controller/categories/categoryController')
+const Chat = require('../controller/chat/chat.controller')
 
 router.post('/register', Auth.register);
 router.post('/confirm-otp', Auth.confirmOtpAndVerify);
@@ -22,5 +23,9 @@ router.post('/connection-request/reject', UserM.userMiddleware, Conn.rejectConne
 //categories routes
 router.post('/new-categories', Categories.createCategory)
 router.get('/category-per-user/:id', Categories.categoriesPerUser)
+
+//chats routes
+router.post('/new-chat', Chat.newChat)
+router.get('/get-chat/:connId', Chat.fetchChat)
 
 module.exports = router
