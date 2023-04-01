@@ -5,6 +5,7 @@ const db = require('./models');
 const routes = require('./router/index')
 const http = require("http");
 const {Server} = require('socket.io');
+const socket = require('./controller/chat');
 
 app.use(express.urlencoded({extended: true}))
     .use(express.json())
@@ -14,6 +15,7 @@ const server = http.createServer(app)
 const io = new Server(server, {
     cors: {origin: '*'}
 })
+socket(io);
 
 db.sequelize.authenticate().then(() => {
     console.log("db connected");
