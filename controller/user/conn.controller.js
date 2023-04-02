@@ -62,6 +62,7 @@ const acceptConnection = async (req, res) => {
 	const {value: {fromId}, error} = schemas.fromId.validate(req.query);
 	if (error) return validationFails(res, error);
 	const {userId} = req.user;
+	console.log(userId)
 	try {
 		await db.UserConnection.update({status: 1}, {where: {fromId, toId: userId}})
 		return res.status(200).json({
