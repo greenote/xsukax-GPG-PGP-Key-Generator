@@ -5,9 +5,9 @@ const socket = (io) => {
 	io.on('connection', (socket) => {
 		// connect user to socket 
 		socket.on('CONNECT-USER', ({userId}) => {
-			// try to get the user either with socket id or user id
-			let findUser = allUsers.find(each => (each.userId == userId || each.socketId == socket.id))
-
+			console.log((userId));
+			// try to get the user first
+			let findUser = allUsers.find(each => each.userId == userId)
 			// if user found update socketId
 			if (findUser) {
 				let index = allUsers.indexOf(findUser)
@@ -21,23 +21,20 @@ const socket = (io) => {
 			// if user not found, add to user array
 			let user = {userId, socketId: socket.id}
 			allUsers.push(user)
-			socket.emit('GET-ACTIVE-USERS', allUsers)
+			socket.emit('users', allUsers)
 		});
 
 		socket.on('SEND-MESSAGE', (data) => {
 			// get the receiver socket id
 			let receiver = allUsers.find(each => (each.userId == data.receiverId));
+			console.log(data, receiver);
 			if (receiver) {
 				socket.to(receiver.socketId).emit('RECEIVE-MESSAGE', data);
 			}
 		})
 
 		socket.on('disconnect', function () {
-			let findUser = allUsers.find(each => each.socketId == socket.id)
-			if (findUser) {
-				let index = allUsers.indexOf(findUser)
-				allUsers.splice(index, 1);
-			}
+			console.log("disconnect")
 		})
 
 		//Typing socket method #### This is capable of firing a message to the receiver
