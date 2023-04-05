@@ -100,7 +100,10 @@ const getMyConnectionRequests = async (req, res) => {
 		const requests = await db.UserConnection.findAll({
 			where: {
 				toId: userId,
-				status: 0
+				[Op.or]: [
+					{status: 0},
+					{status: 2}
+				],
 			},
 			include: ['from']
 		});
