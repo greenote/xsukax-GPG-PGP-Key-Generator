@@ -2,7 +2,7 @@ const Joi = require("joi");
 
 const schemas = {
 	userHeaderSchema: Joi.object({
-		userid: Joi.number().max(10).required(),
+		userid: Joi.string().max(10).required(),
 	}).unknown(),
 
 	confirmOTP: Joi.object().keys({
@@ -16,16 +16,16 @@ const schemas = {
 	}),
 
 	connSchema: Joi.object().keys({
-		fromId: Joi.number().max(10).required(),
-		toId: Joi.number().max(10).required(),
+		fromId: Joi.string().max(10).required(),
+		toId: Joi.string().max(10).required(),
 	}).unknown(),
 
 	toId: Joi.object().keys({
-		toId: Joi.number().max(10).required(),
+		toId: Joi.string().max(10).required(),
 	}),
 
 	fromId: Joi.object().keys({
-		fromId: Joi.number().max(10).required(),
+		fromId: Joi.string().max(10).required(),
 	}),
 
 	phoneSc: Joi.object().keys({
