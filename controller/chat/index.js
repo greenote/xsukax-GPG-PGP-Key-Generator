@@ -16,11 +16,13 @@ const socket = (io) => {
 					socketId: socket.id
 				}
 				allUsers[index] = user
+				console.log('for socket_index',allUsers[index])
 				return
 			}
 			// if user not found, add to user array
 			let user = {userId, socketId: socket.id}
 			allUsers.push(user)
+			console.log(user)
 			socket.emit('users', allUsers)
 		});
 
