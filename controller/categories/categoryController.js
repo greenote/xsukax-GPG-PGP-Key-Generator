@@ -52,7 +52,7 @@ const categoriesPerUser = async (req,res) =>{
     }
 }
 
-// chats per cetegories
+// chats per cetegories###
 const chatPerCategory = async (req, res) =>{
     const {id} = req.param
 }
