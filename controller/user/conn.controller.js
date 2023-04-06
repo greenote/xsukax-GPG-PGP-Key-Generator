@@ -27,7 +27,25 @@ const newConnection = async (req, res) => {
 			}
 		})
 
+
 		if (existingConn) {
+			// if existing connection was rejected, update connection details
+			if (existingConn.status == 2) {
+				existingConn.set({fromId: userId, toId, status: 0});
+				return await existingConn.save().then(connection => {
+					return res.status(200).json({
+						message: "Connection request successful",
+						success: true,
+						data: connection
+					})
+				}).catch(err => {
+					return res.status(500).json({
+						message: "An error occured when creating connecting request, make sure to provide a valid user id",
+						success: false,
+					})
+				})
+			}
+
 			return res.status(400).json({
 				message: "Connection request exist before",
 				success: false,
@@ -44,7 +62,7 @@ const newConnection = async (req, res) => {
 		}).catch(err => {
 			//console.log(err)
 			return res.status(500).json({
-				message: "An error occured when creating connecting request",
+				message: "An error occured when creating connecting request, make sure to provide a valid user id",
 				success: false,
 			})
 		})
@@ -103,10 +121,7 @@ const getMyConnectionRequests = async (req, res) => {
 		const requests = await db.UserConnection.findAll({
 			where: {
 				toId: userId,
-				[Op.or]: [
-					{status: 0},
-					{status: 2}
-				],
+				status: 0,
 			},
 			include: ['from']
 		});
