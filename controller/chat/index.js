@@ -40,17 +40,17 @@ const socket = (io) => {
 		})
 
 		//Typing socket method #### This is capable of firing a message to the receiver
-		// socket.on('typing', (res) => {
-		// 	console.log('for typing', res);
-		// 	allUsers.find(e => {
-		// 		//  console.log('res.user', res)
-		// 		if (e.receiver === res.name) {
-		// 			socket.broadcast.to(e.socket_id).emit('user_typing', {...res, typing: 'typing....'})
-		// 		} else {
-		// 			console.log('undefined');
-		// 		}
-		// 	})
-		// })
+		socket.on('typing', (res) => {
+			console.log('for typing', res);
+			allUsers.find(e => {
+				//  console.log('res.user', res)
+				if (e.userId === res.userId) {
+					socket.broadcast.to(e.socket_id).emit('user_typing', {...res, typing: 'typing....'})
+				} else {
+					console.log('undefined');
+				}
+			})
+		})
 
 		// socket.emit("welcome", "i see user here")
 
