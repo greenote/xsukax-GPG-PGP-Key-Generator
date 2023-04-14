@@ -53,8 +53,9 @@ const categoriesPerUser = async (req,res) =>{
 }
 
 // chats per cetegories###
+// chat per categories is going to be base on request 
 const chatPerCategory = async (req, res) =>{
-    const {id} = req.param
+    
 }
 
 module.exports = {createCategory, categoriesPerUser}

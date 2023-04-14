@@ -18,7 +18,7 @@ const register = async (req, res) => {
 			const updatedObj = {
 				token: Math.floor(Math.random() * 90000) + 10000,
 				status: "unverified",
-				expire_time: currentminute + 3 * 60000,
+				expire_time: currentminute + 5 * 60000,
 			}
 
 			const response = await updateUserAndSMS(updatedObj, userExist);
@@ -53,7 +53,7 @@ const newAcct = async ({name, phone}) => {
 	const token = Math.floor(Math.random() * 90000) + 10000;
 	let currentDateObj = new Date();
 	let currentminute = currentDateObj.getTime();
-	let expire_time = currentminute + 3 * 60000
+	let expire_time = currentminute + 5 * 60000
 
 	await db.User.create({
 		name,
@@ -172,7 +172,7 @@ const resendOtp = async (req, res) => {
 	const updatedObj = {
 		token: Math.floor(Math.random() * 90000) + 10000,
 		status: "unverified",
-		expire_time: currentminute + 3 * 60000,
+		expire_time: currentminute + 5 * 60000,
 	}
 
 	const response = await updateUserAndSMS(updatedObj, {phone});

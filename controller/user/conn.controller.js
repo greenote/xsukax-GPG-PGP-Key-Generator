@@ -5,6 +5,7 @@ const schemas = require("../../utilities/schemas");
 
 const newConnection = async (req, res) => {
 	const {value: {toId}, error} = schemas.toId.validate(req.query);
+	console.log(toId);
 	if (error) return validationFails(res, error);
 	const {userId} = req.user; // set in user.middleware
 	console.log(userId)
