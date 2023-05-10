@@ -23,7 +23,7 @@ router.post('/connection-request/reject', UserM.userMiddleware, Conn.rejectConne
 //categories routes
 router.post('/new-categories', Categories.createCategory)
 router.get('/category-per-user/:id', Categories.categoriesPerUser)
-
+router.post('/chat-per-category', Categories.chatPerCategory)
 //chats routes
 router.post('/new-chat', Chat.newChat)
 router.get('/get-chat/:connId', Chat.fetchChat)

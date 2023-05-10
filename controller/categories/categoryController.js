@@ -2,6 +2,7 @@ const {Category} = require('../../models')
 const {validationFails} = require('../../utilities/requestVal');
 const {categoriesVal} = require('../../utilities/schemas');
 const {Op} = require('sequelize')
+const {Chat} = require('../../models')
 
 //creating of new category
 const createCategory = async (req, res) =>{
@@ -52,10 +53,59 @@ const categoriesPerUser = async (req,res) =>{
     }
 }
 
-// chats per cetegories###
-// chat per categories is going to be base on request 
+
+// chat per categories/thread is going to be base on request 
 const chatPerCategory = async (req, res) =>{
-    
+    const {connection_id, cart_id} = req.body
+    try {
+        const data = await Chat.findOne({
+            where:{
+                [Op.and]:[
+                    {userConnectionId:connection_id},
+                    {categoryId:cart_id}
+                ]
+            }
+        })
+        res.status(200).json({
+            message: "Successful",
+			success: true,
+			data: data
+        })
+    } catch (err) {
+        res.status(500).json({
+            message: "An error occur while fetching",
+			error: err
+        })
+    }
 }
 
-module.exports = {createCategory, categoriesPerUser}
+//delete the category
+const deleteCart = async (req,res)=>{
+    const {id} = req.params
+
+    try {
+        const cartDelete = await Category.destroy({
+            where:{
+                categoryId:id
+            }
+        })
+        res.status(200).send({
+            success:true,
+            message:"deleted successfully",
+            data:cartDelete
+        })
+    } catch (err) {
+        res.status(500).json({
+			error: err
+        })
+    }
+   
+
+
+}
+
+module.exports = {createCategory, 
+    categoriesPerUser, 
+    chatPerCategory,
+    deleteCart
+}
