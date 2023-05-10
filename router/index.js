@@ -24,6 +24,7 @@ router.post('/connection-request/reject', UserM.userMiddleware, Conn.rejectConne
 router.post('/new-categories', Categories.createCategory)
 router.get('/category-per-user/:id', Categories.categoriesPerUser)
 router.post('/chat-per-category', Categories.chatPerCategory)
+router.delete('/delete-cart/:id', Categories.deleteCart)
 //chats routes
 router.post('/new-chat', Chat.newChat)
 router.get('/get-chat/:connId', Chat.fetchChat)

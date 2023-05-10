@@ -82,11 +82,12 @@ const chatPerCategory = async (req, res) =>{
 //delete the category
 const deleteCart = async (req,res)=>{
     const {id} = req.params
+    console.log(id)
 
     try {
         const cartDelete = await Category.destroy({
             where:{
-                categoryId:id
+                id
             }
         })
         res.status(200).send({
