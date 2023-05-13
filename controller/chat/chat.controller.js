@@ -48,4 +48,9 @@ const fetchChat = async (req, res) =>{
 		})
     }
 }
-module.exports = {newChat, fetchChat}
+
+
+module.exports = {
+    newChat, 
+    fetchChat
+}

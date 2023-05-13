@@ -15,6 +15,7 @@ const createCategory = async (req, res) =>{
         return res.status(200).json({
 			message: "Categories created succesfully",
 			success: true,
+            data:cate
 		})
     } catch (error) {
         console.log(error)
@@ -58,7 +59,7 @@ const categoriesPerUser = async (req,res) =>{
 const chatPerCategory = async (req, res) =>{
     const {connection_id, cart_id} = req.body
     try {
-        const data = await Chat.findOne({
+        const data = await Chat.findAll({
             where:{
                 [Op.and]:[
                     {userConnectionId:connection_id},
