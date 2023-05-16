@@ -49,8 +49,45 @@ const fetchChat = async (req, res) =>{
     }
 }
 
+//last chat
+const lastChat = async (req, res) =>{
+    const {id } = req.body
+    const data = await Chat.findAll({
+           where:{
+               [Op.or]:[
+                   {senderId:id},
+                   {receiverId:id}
+               ]
+           },
+           order:[
+               ['createdAt', 'DESC']
+           ],
+           include:['sender', 'receiver']
+    })
+    // get only the last message
+    let lastArr = []
+    data.map(a=> {
+        let check = ""
+        if(a.senderId == id){
+            check = lastArr.filter(last =>last.receiverId == a.receiverId || last.senderId == a.receiverId);
+            console.log(check)
+        }
+     if(a.receiverId == id){
+            check = lastArr.filter(last =>last.senderId == a.senderId || last.receiverId == a.senderId);
+        }
+        if(check.length == 0){
+            lastArr.push(a)
+        }
+    })
+    res.send({
+        data:lastArr,
+        success:true
+    })
+}
+
 
 module.exports = {
     newChat, 
-    fetchChat
+    fetchChat,
+    lastChat
 }

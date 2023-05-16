@@ -28,5 +28,6 @@ router.delete('/delete-cart/:id', Categories.deleteCart)
 //chats routes
 router.post('/new-chat', Chat.newChat)
 router.get('/get-chat/:connId', Chat.fetchChat)
+router.post('/lastchat', Chat.lastChat)
 
 module.exports = router
