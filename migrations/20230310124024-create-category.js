@@ -12,7 +12,7 @@ module.exports = {
       userConnectionId: {
         type: Sequelize.INTEGER,
         references: {model: 'UserConnections', key: 'id'},
-        onDelete: 'CASCADE',
+        onDelete: 'NO ACTION',
         onUpdate: 'CASCADE',
         allowNull: false
       },
