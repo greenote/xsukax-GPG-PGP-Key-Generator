@@ -20,6 +20,7 @@ socket(io);
 db.sequelize.authenticate().then(() => {
     console.log("db connected");
 }).catch(err => {
+    console.log(err);
     console.log("An error occured when connecting to db");
 })
 
