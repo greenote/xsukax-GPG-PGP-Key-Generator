@@ -46,6 +46,7 @@ const socket = (io) => {
 				const index = allUsers.indexOf(findUser)
 				allUsers.splice(index, 1);
 			}
+			socket.emit('GET-ACTIVE-USERS', allUsers)
 		})
 	});
 
