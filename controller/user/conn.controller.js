@@ -146,6 +146,9 @@ const getMySentConnectionRequests = async (req, res) => {
 		const requests = await db.UserConnection.findAll({
 			where: {
 				fromId: userId,
+				status: {
+					[Op.ne]: 1
+				}
 			},
 			include: ['to']
 		});
