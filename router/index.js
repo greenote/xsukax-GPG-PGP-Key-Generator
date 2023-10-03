@@ -19,15 +19,19 @@ router.get('/sent-connection-requests/get', UserM.userMiddleware, Conn.getMySent
 router.get('/connections', UserM.userMiddleware, Conn.myConnections);
 router.post('/connection-request/accept', UserM.userMiddleware, Conn.acceptConnection);
 router.post('/connection-request/reject', UserM.userMiddleware, Conn.rejectConnection);
+router.post('/process-contacts', UserM.userMiddleware, Conn.processContacts);
 
 //categories routes
 router.post('/new-categories', Categories.createCategory)
 router.get('/category-per-user/:id', Categories.categoriesPerUser)
 router.post('/chat-per-category', Categories.chatPerCategory)
 router.delete('/delete-cart/:id', Categories.deleteCart)
+
 //chats routes
 router.post('/new-chat', Chat.newChat)
 router.get('/get-chat/:connId', Chat.fetchChat)
 router.post('/lastchat', Chat.lastChat)
+
+router.post('/update-notification-token', UserM.userMiddleware, Auth.updateUserNotificationToken)
 
 module.exports = router

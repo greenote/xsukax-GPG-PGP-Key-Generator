@@ -7,6 +7,9 @@ module.exports = {
     "database": process.env.DB_NAME,
     "host": process.env.DB_HOST,
     "dialect": process.env.DB_DIALET,
+    "dialectOptions": {
+      socketPath: '/Applications/MAMP/tmp/mysql/mysql.sock'
+    }
   },
   "test": {
     "username": process.env.DB_USERNAME,

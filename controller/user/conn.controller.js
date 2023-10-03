@@ -5,10 +5,8 @@ const schemas = require("../../utilities/schemas");
 
 const newConnection = async (req, res) => {
 	const {value: {toId}, error} = schemas.toId.validate(req.query);
-	console.log(toId);
 	if (error) return validationFails(res, error);
 	const {userId} = req.user; // set in user.middleware
-	console.log(userId)
 
 	if (toId == userId) {
 		return res.status(422).json({
@@ -192,4 +190,33 @@ const myConnections = async (req, res) => {
 	}
 }
 
-module.exports = {newConnection, acceptConnection, getMyConnectionRequests, myConnections, getMySentConnectionRequests, rejectConnection}
+const processContacts = async (req, res) => {
+	const {value: {contacts}, error} = schemas.processContactsSchema.validate(req.body);
+	if (error) return validationFails(res, error);
+
+	try {
+		checkedContacts = await Promise.all(
+			contacts.map(async _contact => {
+				let userFound = await db.User.findOne({where: {phone: _contact.phone}});
+				if (userFound) {
+					return {..._contact, greenId: userFound.id}
+				} else {
+					return _contact
+				}
+			})
+		)
+
+		return res.status(200).json({
+			message: "Done",
+			success: true,
+			data: checkedContacts
+		})
+	} catch (error) {
+		return res.status(500).json({
+			message: "Can't process Contacts",
+			success: false,
+		})
+	}
+}
+
+module.exports = {newConnection, acceptConnection, getMyConnectionRequests, myConnections, getMySentConnectionRequests, rejectConnection, processContacts}

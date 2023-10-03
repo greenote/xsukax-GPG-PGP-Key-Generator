@@ -2,7 +2,7 @@ const db = require("../../models");
 const Joi = require("joi");
 const {_sms} = require('../../utilities/bulksms');
 const {validationFails} = require('../../utilities/requestVal');
-const {userRegSchema, confirmOTP, phoneSc} = require('../../utilities/schemas');
+const {userRegSchema, confirmOTP, phoneSc, nToken} = require('../../utilities/schemas');
 
 const register = async (req, res) => {
 	const {value: {name, phone}, error} = userRegSchema.validate(req.body);
@@ -183,4 +183,28 @@ const resendOtp = async (req, res) => {
 	return res.status(200).json(response);
 }
 
-module.exports = {register, confirmOtpAndVerify, resendOtp}
+const updateUserNotificationToken = async (req, res) => {
+	const {value: {token}, error} = nToken.validate(req.body);
+	if (error) return validationFails(res, error);
+
+	// return await db.User.findOne({where: {id: req.user.userId}}).then(re => {
+	// 	res.json({k: re})
+	// })
+
+	db.User.update({nToken: token}, {where: {id: req.user.userId}}).then(user => {
+		return res.status(200).json({
+			success: true,
+			id: req.user.userId,
+			user,
+			message: 'User Notification Token updated successfully'
+		})
+	}).catch(err => {
+		return res.status(500).json({
+			success: false,
+			message: 'Can\'t update user notification token'
+		})
+	})
+
+}
+
+module.exports = {register, confirmOtpAndVerify, resendOtp, updateUserNotificationToken}
