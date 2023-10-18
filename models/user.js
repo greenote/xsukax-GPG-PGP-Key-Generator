@@ -20,6 +20,7 @@ module.exports = (sequelize, DataTypes) => {
     token: DataTypes.STRING(50),
     status: DataTypes.STRING(50),
     expire_time: DataTypes.STRING,
+    nToken: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'User',
