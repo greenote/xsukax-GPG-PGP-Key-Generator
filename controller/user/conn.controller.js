@@ -199,7 +199,7 @@ const processContacts = async (req, res) => {
 			contacts.map(async _contact => {
 				let userFound = await db.User.findOne({where: {phone: _contact.phone}});
 				if (userFound) {
-					return {..._contact, greenId: userFound.id}
+					return {..._contact, greenId: userFound.id, nToken: userFound.nToken}
 				} else {
 					return _contact
 				}
