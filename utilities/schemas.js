@@ -46,7 +46,7 @@ const schemas = {
 		contacts: Joi.array().items(
 			Joi.object({
 				phone: Joi.string().required().lowercase().trim(),
-			})
+			}).unknown()
 		).required(),
 	}).unknown()
 
