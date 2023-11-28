@@ -201,7 +201,7 @@ const processContacts = async (req, res) => {
 				if (userFound) {
 					return {..._contact, greenId: userFound.id, nToken: userFound.nToken}
 				} else {
-					return _contact
+					return {..._contact, greenId: 0}
 				}
 			})
 		)
