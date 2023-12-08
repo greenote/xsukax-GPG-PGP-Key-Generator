@@ -15,6 +15,10 @@ const schemas = {
 		phone: Joi.string().max(15).trim().replace('/\s/g', '').required(),
 	}),
 
+	updateUser: Joi.object({
+		name: Joi.string().max(30).trim().lowercase().required(),
+	}).unknown(),
+
 	connSchema: Joi.object().keys({
 		fromId: Joi.string().max(10).required(),
 		toId: Joi.string().max(10).required(),
@@ -48,7 +52,12 @@ const schemas = {
 				phone: Joi.string().required().lowercase().trim(),
 			}).unknown()
 		).required(),
-	}).unknown()
+	}).unknown(),
+
+	getUser: Joi.object({
+		phone: Joi.string().max(15),
+		id: Joi.number()
+	}).or('phone', 'id')
 
 }
 
