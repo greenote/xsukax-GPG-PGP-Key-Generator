@@ -194,14 +194,15 @@ module.exports = {
 	processContacts: async (req, res) => {
 		const {contacts} = req.data;
 		try {
-			const checkedContacts = await db.User.findAll({
-				where: {phone: contacts.map(c => c.phone)}
+			const users = await db.User.findAll({
+				where: {phone: contacts.map(c => c.phone)},
+				attributes: ['id', 'name', 'phone', 'nToken', 'createdAt']
 			});
 
 			return res.status(200).json({
 				message: "Done",
 				success: true,
-				data: checkedContacts,
+				data: users,
 			})
 		} catch (error) {
 			return res.status(500).json({
