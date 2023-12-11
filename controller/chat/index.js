@@ -16,6 +16,7 @@ const socket = (io) => {
 					socketId: socket.id
 				}
 				allUsers[index] = user
+				socket.emit('GET-ACTIVE-USERS', allUsers)
 				return
 			}
 			// if user not found, add to user array
