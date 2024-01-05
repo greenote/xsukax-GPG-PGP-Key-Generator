@@ -1,5 +1,4 @@
 const Joi = require("joi");
-
 const schemas = {
 	userHeaderSchema: Joi.object({
 		userid: Joi.string().max(10).required(),
@@ -26,6 +25,10 @@ const schemas = {
 
 	toId: Joi.object().keys({
 		toId: Joi.string().max(10).required(),
+	}),
+
+	id: Joi.object().keys({
+		id: Joi.string().max(10).required(),
 	}),
 
 	fromId: Joi.object().keys({

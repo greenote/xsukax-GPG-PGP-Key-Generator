@@ -80,7 +80,6 @@ module.exports = {
 		const {value: {fromId}, error} = schemas.fromId.validate(req.query);
 		if (error) return validationFails(res, error);
 		const {userId} = req.user;
-		console.log(userId)
 		try {
 			await db.UserConnection.update({status: 1}, {where: {fromId, toId: userId}})
 			return res.status(200).json({
@@ -91,6 +90,24 @@ module.exports = {
 			console.log(error);
 			return res.status(500).json({
 				message: "An error occured when accpting connection request",
+				success: false
+			});
+		}
+	},
+
+	blockConnection: async (req, res) => {
+		const {id} = req.data;
+		const {userId} = req.user;
+		try {
+			await db.UserConnection.update({status: 3}, {where: {id}})
+			return res.status(200).json({
+				message: "User block",
+				success: true,
+			})
+		} catch (error) {
+			console.log(error);
+			return res.status(500).json({
+				message: "An error occured when blocking user request",
 				success: false
 			});
 		}

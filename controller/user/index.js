@@ -38,6 +38,32 @@ module.exports = {
 		}
 	},
 
+	deleteUser: async (req, res) => {
+		const {userId} = req.user;
+		try {
+			const user = await db.User.findByPk(userId);
+			if (user) {
+				user.set({status: "disabled"});
+				await user.save();
+				return res.status(200).json({
+					message: "Successful",
+					success: true,
+					data: user
+				})
+			} else {
+				return res.status(422).json({
+					message: "Can't confirm user",
+					success: false,
+				})
+			}
+		} catch (error) {
+			return res.status(500).json({
+				message: "An error occured when getting user details",
+				success: false
+			});
+		}
+	},
+
 	getUser: async (req, res) => {
 		const {value, error} = schemas.getUser.validate(req.body);
 		if (error) return validationFails(res, error);

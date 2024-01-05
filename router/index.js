@@ -7,7 +7,7 @@ const UserM = require('../middlewares/user.middleware');
 const Categories = require('../controller/categories/categoryController')
 const Chat = require('../controller/chat/chat.controller');
 const schemaMiddleware = require('../middlewares/schema.middleware');
-const {updateUser, processContactsSchema} = require('../utilities/schemas');
+const {updateUser, processContactsSchema, id} = require('../utilities/schemas');
 
 router.post('/register', Auth.register);
 router.post('/confirm-otp', Auth.confirmOtpAndVerify);
@@ -21,6 +21,7 @@ router.get('/sent-connection-requests/get', UserM.userMiddleware, Conn.getMySent
 router.get('/connections', UserM.userMiddleware, Conn.myConnections);
 router.post('/connection-request/accept', UserM.userMiddleware, Conn.acceptConnection);
 router.post('/connection-request/reject', UserM.userMiddleware, Conn.rejectConnection);
+router.post('/connection/block', UserM.userMiddleware, schemaMiddleware(id), Conn.blockConnection);
 
 //categories routes
 router.post('/new-categories', Categories.createCategory)
@@ -39,6 +40,7 @@ router.post('/update-notification-token', UserM.userMiddleware, Auth.updateUserN
 router.get('/get-active-user', UserM.userMiddleware, User.getActiveUser);
 router.get('/get-user', UserM.userMiddleware, User.getUser);
 router.post('/update-user', UserM.userMiddleware, schemaMiddleware(updateUser), User.updateUser);
+router.post('/delete-account', UserM.userMiddleware, User.deleteUser);
 
 
 module.exports = router
