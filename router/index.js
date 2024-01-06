@@ -21,7 +21,7 @@ router.get('/sent-connection-requests/get', UserM.userMiddleware, Conn.getMySent
 router.get('/connections', UserM.userMiddleware, Conn.myConnections);
 router.post('/connection-request/accept', UserM.userMiddleware, Conn.acceptConnection);
 router.post('/connection-request/reject', UserM.userMiddleware, Conn.rejectConnection);
-router.post('/connection/block', UserM.userMiddleware, schemaMiddleware(id), Conn.blockConnection);
+router.post('/connection/block', UserM.userMiddleware, Conn.blockConnection);
 
 //categories routes
 router.post('/new-categories', Categories.createCategory)

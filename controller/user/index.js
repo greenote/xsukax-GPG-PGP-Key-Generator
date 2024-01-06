@@ -48,7 +48,7 @@ module.exports = {
 				return res.status(200).json({
 					message: "Successful",
 					success: true,
-					data: user
+					// data: user
 				})
 			} else {
 				return res.status(422).json({
