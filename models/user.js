@@ -21,19 +21,23 @@ module.exports = (sequelize, DataTypes) => {
     status: DataTypes.STRING(50),
     expire_time: DataTypes.STRING,
     nToken: DataTypes.STRING,
+    bio: DataTypes.STRING,
+    dName: DataTypes.STRING,
+    dPicture: DataTypes.STRING,
+    dPictureKey: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'User',
     defaultScope: {
       attributes: {
-        exclude: ['token']
+        exclude: ['token', 'expire_time']
       },
       // order: [['id', 'phone']]
     },
     scopes: {
       withToken: {
         attributes: {
-          include: ['token']
+          include: ['token', 'expire_time']
         }
       }
     }

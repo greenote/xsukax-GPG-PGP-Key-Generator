@@ -94,13 +94,13 @@ module.exports = {
 
 	updateUser: async (req, res) => {
 		const {userId} = req.user;
-		const {name} = req.data;
+		const {name, bio, dName} = req.data;
 
 		try {
 			const user = await db.User.findByPk(userId);
 
 			if (user) {
-				user.set({name});
+				user.set({name, bio, dName});
 				await user.save();
 				return res.status(200).json({
 					message: "Successful",

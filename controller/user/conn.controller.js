@@ -214,7 +214,6 @@ module.exports = {
 		try {
 			const users = await db.User.findAll({
 				where: {phone: contacts.map(c => c.phone)},
-				attributes: ['id', 'name', 'phone', 'nToken', 'createdAt']
 			});
 
 			return res.status(200).json({

@@ -25,7 +25,7 @@ module.exports = {
       },
       status: {
         type: Sequelize.INTEGER,
-        comment: "(2)-rejected (1)-accpeted (0)-pending",
+        comment: "(3)-blocked (2)-rejected (1)-accpeted (0)-pending",
         allowNull: false,
         defaultValue: 0
       },
