@@ -95,12 +95,21 @@ module.exports = {
 	updateUser: async (req, res) => {
 		const {userId} = req.user;
 		const {name, bio, dName} = req.data;
+		let update = {name, bio, dName};
+
+		if (req.file) {
+			const {path, filename} = req.file
+			update = {
+				...update,
+				dPicture: path,
+				dPictureKey: filename
+			}
+		}
 
 		try {
 			const user = await db.User.findByPk(userId);
-
 			if (user) {
-				user.set({name, bio, dName});
+				user.set(update);
 				await user.save();
 				return res.status(200).json({
 					message: "Successful",
