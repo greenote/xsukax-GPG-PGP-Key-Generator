@@ -75,8 +75,8 @@ const newAcct = async ({ name, phone }) => {
       response = {
         success: true,
         message: "User Registration Successful",
-        smsResponse: smsResponse.message,
         data: { phone, id: _user.id },
+        smsResponse: smsResponse.message,
       }
     })
     .catch((_error) => {
