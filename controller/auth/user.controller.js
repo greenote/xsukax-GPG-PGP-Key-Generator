@@ -99,7 +99,7 @@ const updateUserAndSMS = async (updatedObj, { id, phone }) => {
         success: false,
       }
     }
-    user.set(updatedObj)
+    user.phone != ENV("DEMO_PHONE") && user.set(updatedObj)
     await user
       .save()
       .then(async (_user) => {
@@ -141,7 +141,9 @@ const confirmOtpAndVerify = async (req, res) => {
   let currentDateObj = new Date()
   let currentminute = currentDateObj.getTime()
   try {
-    const user = await db.User.findOne({ where: { id: userId } })
+    const user = await db.User.scope("withToken").findOne({
+      where: { id: userId },
+    })
     if (!user) {
       return res.status(404).json({
         message: "User not found",
@@ -152,6 +154,7 @@ const confirmOtpAndVerify = async (req, res) => {
     if (user.token != otp) {
       return res.status(400).json({
         message: "Invalid OTP",
+        // message: user,
         success: false,
       })
     }
@@ -170,6 +173,7 @@ const confirmOtpAndVerify = async (req, res) => {
     return user
       .save()
       .then((user) => {
+        user.token = null
         return res.status(200).json({
           data: user,
           message: "Account Verified Successfully",
@@ -183,6 +187,7 @@ const confirmOtpAndVerify = async (req, res) => {
         })
       })
   } catch (error) {
+    console.log(error)
     return res.status(500).send({
       success: false,
       message: "An error occured when confirming user details",
