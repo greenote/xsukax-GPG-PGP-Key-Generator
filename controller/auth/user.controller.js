@@ -1,25 +1,25 @@
 const db = require("../../models")
 const Joi = require("joi")
-const { _sms } = require("../../utilities/bulksms")
-const { validationFails } = require("../../utilities/requestVal")
+const {_sms} = require("../../utilities/bulksms")
+const {validationFails} = require("../../utilities/helpers")
 const {
   userRegSchema,
   confirmOTP,
   phoneSc,
   nToken,
 } = require("../../utilities/schemas")
-const { ENV } = require("../../utilities/helpers")
+const {ENV} = require("../../utilities/helpers")
 
 const register = async (req, res) => {
   const {
-    value: { name, phone },
+    value: {name, phone},
     error,
   } = userRegSchema.validate(req.body)
   if (error) return validationFails(res, error)
 
   try {
     // check if user exist before
-    const userExist = await db.User.findOne({ where: { phone } })
+    const userExist = await db.User.findOne({where: {phone}})
 
     if (userExist) {
       // if user exist, create otp and send sms
@@ -39,7 +39,7 @@ const register = async (req, res) => {
     }
 
     // create new acount if user does not exist before
-    const newUser = await newAcct({ name, phone })
+    const newUser = await newAcct({name, phone})
     if (!newUser.success) {
       return res.status(500).json(newUser)
     }
@@ -54,7 +54,7 @@ const register = async (req, res) => {
 }
 
 //new account methods
-const newAcct = async ({ name, phone }) => {
+const newAcct = async ({name, phone}) => {
   let response = {}
 
   const token = Math.floor(Math.random() * 90000) + 10000
@@ -70,12 +70,12 @@ const newAcct = async ({ name, phone }) => {
     token,
   })
     .then(async (_user) => {
-      const smsResponse = await _sms({ phone, token })
+      const smsResponse = await _sms({phone, token})
 
       response = {
         success: true,
         message: "User Registration Successful",
-        data: { phone, id: _user.id },
+        data: {phone, id: _user.id},
         smsResponse: smsResponse.message,
       }
     })
@@ -89,10 +89,10 @@ const newAcct = async ({ name, phone }) => {
   return response
 }
 
-const updateUserAndSMS = async (updatedObj, { id, phone }) => {
+const updateUserAndSMS = async (updatedObj, {id, phone}) => {
   let response = {}
   try {
-    const user = await db.User.findOne({ where: id ? { id } : { phone } })
+    const user = await db.User.findOne({where: id ? {id} : {phone}})
     if (!user) {
       return {
         message: "Can't find user details",
@@ -104,12 +104,12 @@ const updateUserAndSMS = async (updatedObj, { id, phone }) => {
       .save()
       .then(async (_user) => {
         // send token through sms
-        const smsResponse = await _sms({ phone, token: updatedObj.token })
+        const smsResponse = await _sms({phone, token: updatedObj.token})
         response = {
           success: true,
           message: `Welcome back`,
           smsResponse: smsResponse.message,
-          data: { phone, id },
+          data: {phone, id},
         }
       })
       .catch((_error) => {
@@ -132,7 +132,7 @@ const updateUserAndSMS = async (updatedObj, { id, phone }) => {
 // confirmation of otp###
 const confirmOtpAndVerify = async (req, res) => {
   const {
-    value: { otp, userId },
+    value: {otp, userId},
     error,
   } = confirmOTP.validate(req.body)
   if (error) return validationFails(res, error)
@@ -142,7 +142,7 @@ const confirmOtpAndVerify = async (req, res) => {
   let currentminute = currentDateObj.getTime()
   try {
     const user = await db.User.scope("withToken").findOne({
-      where: { id: userId },
+      where: {id: userId},
     })
     if (!user) {
       return res.status(404).json({
@@ -169,7 +169,7 @@ const confirmOtpAndVerify = async (req, res) => {
       })
     }
 
-    user.set({ status: "verified" })
+    user.set({status: "verified"})
     return user
       .save()
       .then((user) => {
@@ -197,7 +197,7 @@ const confirmOtpAndVerify = async (req, res) => {
 
 const resendOtp = async (req, res) => {
   const {
-    value: { phone },
+    value: {phone},
     error,
   } = phoneSc.validate(req.body)
   if (error) return validationFails(res, error)
@@ -209,7 +209,7 @@ const resendOtp = async (req, res) => {
     expire_time: currentminute + 5 * 60000,
   }
 
-  const response = await updateUserAndSMS(updatedObj, { phone })
+  const response = await updateUserAndSMS(updatedObj, {phone})
   if (!response.success) {
     return res.status(500).json(response)
   }
@@ -219,7 +219,7 @@ const resendOtp = async (req, res) => {
 
 const updateUserNotificationToken = async (req, res) => {
   const {
-    value: { token },
+    value: {token},
     error,
   } = nToken.validate(req.body)
   if (error) return validationFails(res, error)
@@ -228,7 +228,7 @@ const updateUserNotificationToken = async (req, res) => {
   // 	res.json({k: re})
   // })
 
-  db.User.update({ nToken: token }, { where: { id: req.user.userId } })
+  db.User.update({nToken: token}, {where: {id: req.user.userId}})
     .then((user) => {
       return res.status(200).json({
         success: true,

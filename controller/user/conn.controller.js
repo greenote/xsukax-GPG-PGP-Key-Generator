@@ -1,6 +1,6 @@
 const {Op} = require("sequelize");
 const db = require("../../models");
-const {validationFails} = require("../../utilities/requestVal");
+const {validationFails} = require("../../utilities/helpers");
 const schemas = require("../../utilities/schemas");
 
 module.exports = {

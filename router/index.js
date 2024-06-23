@@ -67,7 +67,7 @@ router.get("/get-user", UserM.userMiddleware, User.getUser)
 router.post(
   "/update-user",
   UserM.userMiddleware,
-  schemaMiddleware(updateUser),
+  // schemaMiddleware(updateUser),
   User.updateUser
 )
 router.post("/delete-account", UserM.userMiddleware, User.deleteUser)

@@ -1,4 +1,4 @@
-const {validationFails} = require("../utilities/requestVal");
+const {validationFails} = require("../utilities/helpers");
 const {userHeaderSchema} = require("../utilities/schemas");
 
 

@@ -1,7 +1,8 @@
-const {Op} = require("sequelize");
-const db = require("../../models");
-const schemas = require("../../utilities/schemas");
-const {validationFails} = require("../../utilities/requestVal");
+const {Op} = require('sequelize');
+const db = require('../../models');
+const schemas = require('../../utilities/schemas');
+const {validationFails} = require('../../utilities/helpers');
+const {UploadToS3} = require('../../utilities/aws-upload');
 
 module.exports = {
 	getAllUsers: async (req, res) => {
@@ -9,14 +10,14 @@ module.exports = {
 		try {
 			const requests = await db.User.findAll();
 			return res.status(200).json({
-				message: "Successful",
+				message: 'Successful',
 				success: true,
-				data: requests
-			})
+				data: requests,
+			});
 		} catch (error) {
 			return res.status(500).json({
-				message: "An error occured when getting all users",
-				success: false
+				message: 'An error occured when getting all users',
+				success: false,
 			});
 		}
 	},
@@ -26,14 +27,14 @@ module.exports = {
 		try {
 			const user = await db.User.findByPk(userId);
 			return res.status(200).json({
-				message: "Successful",
+				message: 'Successful',
 				success: true,
-				data: user
-			})
+				data: user,
+			});
 		} catch (error) {
 			return res.status(500).json({
-				message: "An error occured when getting user details",
-				success: false
+				message: 'An error occured when getting user details',
+				success: false,
 			});
 		}
 	},
@@ -43,23 +44,23 @@ module.exports = {
 		try {
 			const user = await db.User.findByPk(userId);
 			if (user) {
-				user.set({status: "disabled"});
+				user.set({status: 'disabled'});
 				await user.save();
 				return res.status(200).json({
-					message: "Successful",
+					message: 'Successful',
 					success: true,
 					// data: user
-				})
+				});
 			} else {
 				return res.status(422).json({
 					message: "Can't confirm user",
 					success: false,
-				})
+				});
 			}
 		} catch (error) {
 			return res.status(500).json({
-				message: "An error occured when getting user details",
-				success: false
+				message: 'An error occured when getting user details',
+				success: false,
 			});
 		}
 	},
@@ -71,39 +72,45 @@ module.exports = {
 		try {
 			const user = await db.User.findOne({
 				where: {
-					[Op.or]: [
-						{id: value.id ?? null},
-						{phone: value.phone ?? null},
-					]
-				}
+					[Op.or]: [{id: value.id ?? null}, {phone: value.phone ?? null}],
+				},
 			});
 
 			return res.status(200).json({
-				message: "Successful",
+				message: 'Successful',
 				success: true,
-				data: user
-			})
+				data: user,
+			});
 		} catch (error) {
 			console.log(error);
 			return res.status(500).json({
-				message: "An error occured when fetching user details",
+				message: 'An error occured when fetching user details',
 				success: false,
 			});
 		}
 	},
 
 	updateUser: async (req, res) => {
+		const upload = await UploadToS3(req, (resp) => {
+			console.log(resp);
+			res.status(200).json(resp);
+		});
+		// res.status(200).json({
+		// 	message : "Ok"
+		// })
+		return;
+
 		const {userId} = req.user;
 		const {name, bio, dName} = req.data;
 		let update = {name, bio, dName};
 
 		if (req.file) {
-			const {path, filename} = req.file
+			const {path, filename} = req.file;
 			update = {
 				...update,
 				dPicture: path,
-				dPictureKey: filename
-			}
+				dPictureKey: filename,
+			};
 		}
 
 		try {
@@ -112,23 +119,22 @@ module.exports = {
 				user.set(update);
 				await user.save();
 				return res.status(200).json({
-					message: "Successful",
+					message: 'Successful',
 					success: true,
-					data: user
-				})
+					data: user,
+				});
 			} else {
 				return res.status(422).json({
 					message: "Can't confirm user",
 					success: false,
-				})
+				});
 			}
 		} catch (error) {
 			console.log(error);
 			return res.status(500).json({
-				message: "An error occured when updating user details",
+				message: 'An error occured when updating user details',
 				success: false,
 			});
 		}
-	}
-
-}
+	},
+};

@@ -1,4 +1,4 @@
-const {validationFails} = require("../utilities/requestVal");
+const {validationFails} = require("../utilities/helpers");
 
 module.exports = (schema, data = null) => {
 	return (req, res, next) => {
