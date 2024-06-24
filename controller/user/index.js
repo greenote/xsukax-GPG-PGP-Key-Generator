@@ -1,12 +1,12 @@
 const {Op} = require('sequelize');
 const db = require('../../models');
 const schemas = require('../../utilities/schemas');
-const {validationFails} = require('../../utilities/helpers');
+const {validationFails, ENV} = require('../../utilities/helpers');
 const {DeleteObjectCommand} = require('@aws-sdk/client-s3');
+const {s3} = require('../../utilities/aws-upload');
 
-module.exports = {
+const exp = {
 	getAllUsers: async (req, res) => {
-		// const {userId} = req.user;
 		try {
 			const requests = await db.User.findAll();
 			return res.status(200).json({
@@ -90,6 +90,20 @@ module.exports = {
 		}
 	},
 
+	deletePreviousImage: async (user) => {
+		if (user.dPicture) {
+			try {
+				const command = new DeleteObjectCommand({
+					Bucket: ENV('AWS_BUCKET_NAME'),
+					Key: new URL(user.dPicture).pathname.slice(1)
+				});
+				s3.send(command);
+			} catch (error) {
+				console.log("Could't delete previous image", error);
+			}
+		}
+	},
+
 	updateUser: async (req, res) => {
 		// get the only values you need
 		const {userId} = req.user;
@@ -105,6 +119,7 @@ module.exports = {
 		try {
 			const user = await db.User.findByPk(userId);
 			if (user) {
+				exp.deletePreviousImage(user);
 				user.set(update);
 				await user.save();
 				return res.status(200).json({
@@ -139,6 +154,7 @@ module.exports = {
 		try {
 			const user = await db.User.findByPk(userId);
 			if (user) {
+				exp.deletePreviousImage(user);
 				user.set({dPicture: req.file.path});
 				await user.save();
 				return res.status(200).json({
@@ -162,3 +178,7 @@ module.exports = {
 
 	},
 };
+
+
+
+module.exports = exp;

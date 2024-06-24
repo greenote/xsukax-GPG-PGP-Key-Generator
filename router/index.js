@@ -67,14 +67,12 @@ router.post(
 router.get("/get-active-user", UserM.userMiddleware, User.getActiveUser)
 router.get("/get-user", UserM.userMiddleware, User.getUser)
 router.post(
-  "/update-user",
-  UserM.userMiddleware,
+  "/update-user", UserM.userMiddleware,
   formidableSingleUpload('dp', updateUser, ENV('DP_PATH')),
   User.updateUser
 )
 router.post(
-  "/update-user-dp",
-  UserM.userMiddleware,
+  "/update-user-dp", UserM.userMiddleware,
   formidableSingleUpload('dp', null, ENV('DP_PATH')),
   User.updateUserDisplayImage
 )
