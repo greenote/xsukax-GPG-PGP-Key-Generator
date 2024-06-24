@@ -9,6 +9,7 @@ const Chat = require("../controller/chat/chat.controller")
 const schemaMiddleware = require("../middlewares/schema.middleware")
 const {updateUser, processContactsSchema} = require("../utilities/schemas")
 const {formidableSingleUpload} = require("../utilities/aws-upload")
+const {ENV} = require("../utilities/helpers")
 
 router.post("/register", Auth.register)
 router.post("/confirm-otp", Auth.confirmOtpAndVerify)
@@ -68,9 +69,14 @@ router.get("/get-user", UserM.userMiddleware, User.getUser)
 router.post(
   "/update-user",
   UserM.userMiddleware,
-  // formidableSingleUpload,
-  // schemaMiddleware(updateUser),
+  formidableSingleUpload('dp', updateUser, ENV('DP_PATH')),
   User.updateUser
+)
+router.post(
+  "/update-user-dp",
+  UserM.userMiddleware,
+  formidableSingleUpload('dp', null, ENV('DP_PATH')),
+  User.updateUserDisplayImage
 )
 router.post("/delete-account", UserM.userMiddleware, User.deleteUser)
 

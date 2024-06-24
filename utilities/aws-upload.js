@@ -1,9 +1,10 @@
 const {S3Client} = require('@aws-sdk/client-s3');
 const {Upload} = require('@aws-sdk/lib-storage');
-const {ENV} = require("./helpers")
+const {ENV, validationFails} = require("./helpers")
 const {randomBytes} = require('crypto');
 const busboy = require('busboy');
 const path = require('path');
+const fs = require('fs');
 const {IncomingForm} = require('formidable');
 
 const s3 = new S3Client({
@@ -13,10 +14,9 @@ const s3 = new S3Client({
 		secretAccessKey: ENV('AWS_SECRET_ACCESS_KEY'),
 	},
 });
-/**
- * Display Picture folder
- */
-const DP_PATH = 'display-pictures';
+
+const getObjectBase = (bucket = ENV('AWS_BUCKET_NAME'), region = ENV('AWS_REGION')) => `https://${bucket}.s3.${region}.amazonaws.com/`;
+
 const generateFileKey = (folder, filename) => {
 	if (folder) {
 		return path.join(
@@ -39,7 +39,7 @@ const UploadToS3 = async (req, callback) => {
 
 	try {
 		bb.on('file', async function (name, file, info) {
-			const key = generateFileKey(DP_PATH, info.filename);
+			const key = generateFileKey(ENV('DP_PATH'), info.filename);
 			const fileResponse = {status: 0, message: "", name, key};
 			const s3Params = {
 				Body: file,
@@ -98,42 +98,67 @@ const UploadToS3 = async (req, callback) => {
 };
 
 
-const formidableSingleUpload = (req, res, next) => {
-	const form = new IncomingForm();
+const formidableSingleUpload = (
+	fileKey, schema,
+	folder, bucket = ENV('AWS_BUCKET_NAME')
+) => {
+	return (req, res, next) => {
+		const form = new IncomingForm();
+		return form.parse(req, async (err, fields, files) => {
+			if (err) {
+				return res.status(500).json({
+					success: false,
+					message: 'Can\'t process this form data at the moment'
+				})
+			}
 
-	return form.parse(req, async (err, fields, files) => {
-		if (err) {
-			return res.status(500).json({
-				success: false,
-				message: 'Can\t process this request at the moment'
+			const updateData = {};
+			Object.entries(fields).forEach(([key, [value]]) => {
+				updateData[key] = value;
 			})
-		}
 
-		Object.entries(fields).forEach(([key, [value]]) => {
-			req.data[key] = value;
-		})
-
-		try {
-			const s3Params = {
-				Body: fs.createReadStream(files.dp[0].filepath),
-				Key: generateFileKey(DP_PATH, files.dp[0].originalFilename),
-				Bucket: ENV('AWS_BUCKET_NAME'),
-				Metadata: {'Content-Type': files.dp[0].mimeType},
+			const validated = schema?.validate(updateData);
+			// const {value: cleanUpdate, error} = schema?.validate(updateData);
+			if (validated?.error && schema) {
+				return validationFails(res, validated?.error)
 			};
+			const cleanUpdate = validated?.value ?? {}
 
-			console.log(files.file, fields);
+			if (files[fileKey] && files[fileKey][0]) {
+				const {filepath, originalFilename, mimeType} = files[fileKey][0];
+				const _key = generateFileKey(folder, originalFilename);
+				try {
+					const s3Params = {
+						Body: fs.createReadStream(filepath),
+						Key: _key,
+						Bucket: bucket,
+						Metadata: {'Content-Type': mimeType},
+					};
+					cleanUpdate.fileKey = _key;
+					const uploader = new Upload({client: s3, params: s3Params});
+					await uploader.done();
+				} catch (error) {
+					console.log(error);
+					return res.status(500).json({
+						success: false,
+						message: 'Can\'t upload file, please try again.',
+					})
+				}
+			}
 
 
-			const uploader = new Upload({client: s3, params: s3Params});
-			await uploader.done();
-			// console.log(fields, files);
-			res.send("o ti tan")
-			// ... rest of your code
-		} catch (error) {
-			console.log(error);
-			res.send("omooo")
-		}
-	});
+			req.data = cleanUpdate;
+			req.file = {
+				path: `${getObjectBase()}${cleanUpdate.fileKey}`,
+				key: cleanUpdate.fileKey
+			};
+			return next();
+
+		});
+	}
 }
 
-module.exports = {UploadToS3, s3, generateFileKey, formidableSingleUpload, DP_PATH};
+module.exports = {
+	s3, formidableSingleUpload,
+	generateFileKey, getObjectBase
+};
