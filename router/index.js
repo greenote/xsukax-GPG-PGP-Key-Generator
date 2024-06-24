@@ -7,7 +7,8 @@ const UserM = require("../middlewares/user.middleware")
 const Categories = require("../controller/categories/categoryController")
 const Chat = require("../controller/chat/chat.controller")
 const schemaMiddleware = require("../middlewares/schema.middleware")
-const { updateUser, processContactsSchema } = require("../utilities/schemas")
+const {updateUser, processContactsSchema} = require("../utilities/schemas")
+const {formidableSingleUpload} = require("../utilities/aws-upload")
 
 router.post("/register", Auth.register)
 router.post("/confirm-otp", Auth.confirmOtpAndVerify)
@@ -67,6 +68,7 @@ router.get("/get-user", UserM.userMiddleware, User.getUser)
 router.post(
   "/update-user",
   UserM.userMiddleware,
+  // formidableSingleUpload,
   // schemaMiddleware(updateUser),
   User.updateUser
 )
