@@ -144,14 +144,16 @@ const formidableSingleUpload = (
 						message: 'Can\'t upload file, please try again.',
 					})
 				}
+
+				req.file = {
+					path: `${getObjectBase()}${cleanUpdate.fileKey}`,
+					key: cleanUpdate.fileKey
+				};
 			}
 
 
 			req.data = cleanUpdate;
-			req.file = {
-				path: `${getObjectBase()}${cleanUpdate.fileKey}`,
-				key: cleanUpdate.fileKey
-			};
+
 			return next();
 
 		});

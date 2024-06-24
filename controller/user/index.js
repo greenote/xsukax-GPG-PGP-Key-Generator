@@ -90,8 +90,8 @@ const exp = {
 		}
 	},
 
-	deletePreviousImage: async (user) => {
-		if (user.dPicture) {
+	deletePreviousImage: async (user, file) => {
+		if (user.dPicture && file) {
 			try {
 				const command = new DeleteObjectCommand({
 					Bucket: ENV('AWS_BUCKET_NAME'),
@@ -109,7 +109,7 @@ const exp = {
 		const {userId} = req.user;
 		const {name, bio, dName} = req.data;
 		let update = {name, bio, dName};
-		if (req.file) {
+		if (req?.file) {
 			update = {
 				...update,
 				dPicture: req.file.path,
@@ -119,7 +119,7 @@ const exp = {
 		try {
 			const user = await db.User.findByPk(userId);
 			if (user) {
-				exp.deletePreviousImage(user);
+				exp.deletePreviousImage(user, req?.file);
 				user.set(update);
 				await user.save();
 				return res.status(200).json({
@@ -143,7 +143,7 @@ const exp = {
 	},
 
 	updateUserDisplayImage: async (req, res) => {
-		if (!req.file) {
+		if (!req?.file) {
 			return res.status(422).json({
 				success: false,
 				message: '`dp` field is required.',
@@ -154,7 +154,7 @@ const exp = {
 		try {
 			const user = await db.User.findByPk(userId);
 			if (user) {
-				exp.deletePreviousImage(user);
+				exp.deletePreviousImage(user, req?.file);
 				user.set({dPicture: req.file.path});
 				await user.save();
 				return res.status(200).json({
