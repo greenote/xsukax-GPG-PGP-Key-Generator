@@ -94,11 +94,10 @@ module.exports = {
 			});
 		}
 	},
-
+    //Block connection ##
 	blockConnection: async (req, res) => {
 		const {value: {id}, error} = schemas.id.validate(req.query);
 		if (error) return validationFails(res, error);
-		const {userId} = req.user;
 		try {
 			await db.UserConnection.update({status: 3}, {where: {id}})
 			return res.status(200).json({
