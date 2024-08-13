@@ -31,6 +31,9 @@ const schemas = {
 		id: Joi.string().max(10).required(),
 	}),
 
+	conn_id: Joi.object().keys({
+		conn_id: Joi.string().max(10).required(),
+	}),
 	fromId: Joi.object().keys({
 		fromId: Joi.string().max(10).required(),
 	}),

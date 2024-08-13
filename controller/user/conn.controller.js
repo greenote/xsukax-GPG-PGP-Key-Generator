@@ -8,6 +8,7 @@ module.exports = {
 		const {value: {toId}, error} = schemas.toId.validate(req.query);
 		if (error) return validationFails(res, error);
 		const {userId} = req.user; // set in user.middleware
+		console.log(userId)
 
 		if (toId == userId) {
 			return res.status(422).json({
@@ -94,10 +95,12 @@ module.exports = {
 			});
 		}
 	},
-    //Block connection ##
+    //##Block connection ##
 	blockConnection: async (req, res) => {
 		const {value: {id}, error} = schemas.id.validate(req.query);
+		console.log(id)
 		if (error) return validationFails(res, error);
+		const {userId} = req.user;
 		try {
 			await db.UserConnection.update({status: 3}, {where: {id}})
 			return res.status(200).json({
@@ -113,8 +116,57 @@ module.exports = {
 		}
 	},
 
+	
+	//Blocking chat connection
+	blockChatConnection: async (req, res) => {
+		const {value: {fromId}, error} = schemas.fromId.validate(req.query);
+		if (error) return validationFails(res, error);
+		const {userId} = req.user;
+		console.log(userId)
+		try {
+			await db.UserConnection.update({status: 3}, {where: {fromId, toId:userId}})
+			return res.status(200).json({
+				message: "Connection blocked",
+				success: true,
+			})
+		} catch (error) {
+			console.log(error);
+			return res.status(500).json({
+				message: "An error occured when blocking user request",
+				success: false
+			});
+		}
+	},
+
+	//get all Bloked Connections..
+	getMyBlokedConnection: async (req, res) => {
+		const {userId} = req.user;
+		console.log(userId)
+		try {
+			const requests = await db.UserConnection.findAll({
+				where: {
+					toId: userId,
+					status: 3
+				},
+				include: ['to']
+			});
+			return res.status(200).json({
+				message: "Successful",
+				success: true,
+				data: requests
+			})
+		} catch (error) {
+			console.log(error);
+			return res.status(500).json({
+				message: "An error occured when getting pending request",
+				success: false
+			});
+		}
+	},
+
 	getMyConnectionRequests: async (req, res) => {
 		const {userId} = req.user;
+		console.log(userId)
 		try {
 			const requests = await db.UserConnection.findAll({
 				where: {
@@ -139,6 +191,7 @@ module.exports = {
 
 	myConnections: async (req, res) => {
 		const {userId} = req.user;
+		console.log(userId)
 		try {
 			const requests = await db.UserConnection.findAll({
 				where: {

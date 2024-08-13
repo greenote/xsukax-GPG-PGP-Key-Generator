@@ -17,6 +17,7 @@ router.post("/resend-otp", Auth.resendOtp)
 
 router.get("/all-users", User.getAllUsers)
 
+//connections routes ### 
 router.post("/connection-request", UserM.userMiddleware, Conn.newConnection)
 router.get(
   "/connection-request/get",
@@ -40,6 +41,8 @@ router.post(
   Conn.rejectConnection
 )
 router.post("/connection/block", UserM.userMiddleware, Conn.blockConnection)
+router.post("/connection/block-chat", UserM.userMiddleware, Conn.blockChatConnection)
+router.get("/connection/get-blocked-conn", UserM.userMiddleware, Conn.getMyBlokedConnection)
 
 //categories routes
 router.post("/new-categories", Categories.createCategory)
