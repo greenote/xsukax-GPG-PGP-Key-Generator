@@ -138,7 +138,7 @@ module.exports = {
 		}
 	},
 
-	//get all Bloked Connections..
+	//get all Bloked chat Connections methods..
 	getMyBlokedConnection: async (req, res) => {
 		const {userId} = req.user;
 		console.log(userId)
@@ -241,7 +241,7 @@ module.exports = {
 			});
 		}
 	},
-
+	
 	rejectConnection: async (req, res) => {
 		const {value: {fromId}, error} = schemas.fromId.validate(req.query);
 		if (error) return validationFails(res, error);
