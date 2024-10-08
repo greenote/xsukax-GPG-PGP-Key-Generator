@@ -43,6 +43,7 @@ router.post(
 router.post("/connection/block", UserM.userMiddleware, Conn.blockConnection)
 router.post("/connection/block-chat", UserM.userMiddleware, Conn.blockChatConnection)
 router.get("/connection/get-blocked-conn", UserM.userMiddleware, Conn.getMyBlokedConnection)
+router.post("/connection/onblocked-conn", UserM.userMiddleware, Conn.onBlockChatConnection)
 
 //categories routes
 router.post("/new-categories", Categories.createCategory)

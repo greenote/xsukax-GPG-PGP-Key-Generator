@@ -138,6 +138,28 @@ module.exports = {
 		}
 	},
 
+	//onBlocked User....
+	
+	onBlockChatConnection: async (req, res) => {
+		const {value: {fromId}, error} = schemas.fromId.validate(req.query);
+		if (error) return validationFails(res, error);
+		const {userId} = req.user;
+		console.log(userId)
+		try {
+			await db.UserConnection.update({status: 1}, {where: {fromId, toId:userId}})
+			return res.status(200).json({
+				message: "Connection onBlocked",
+				success: true,
+			})
+		} catch (error) {
+			console.log(error);
+			return res.status(500).json({
+				message: "An error occured when blocking user request",
+				success: false
+			});
+		}
+	},
+
 	//get all Bloked chat Connections methods..
 	getMyBlokedConnection: async (req, res) => {
 		const {userId} = req.user;
