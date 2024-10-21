@@ -6,7 +6,7 @@ async function _sms(data) {
   try {
     const config = {
       method: "post",
-      url: "http://api.ebulksms.com:8080/sendsms.json",
+      url: "https://api.ebulksms.com/sendsms.json",
       data: {
         SMS: {
           auth: {
