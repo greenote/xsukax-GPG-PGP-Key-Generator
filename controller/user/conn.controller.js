@@ -101,8 +101,9 @@ module.exports = {
 		console.log(id)
 		if (error) return validationFails(res, error);
 		const {userId} = req.user;
+		console.log(userId)
 		try {
-			await db.UserConnection.update({status: 3}, {where: {id}})
+			await db.UserConnection.update({status: 3, blocked_by:userId}, {where: {id}})
 			return res.status(200).json({
 				message: "User block",
 				success: true,
@@ -116,37 +117,13 @@ module.exports = {
 		}
 	},
 
-	
-	//Blocking chat connection
-	blockChatConnection: async (req, res) => {
-		const {value: {fromId}, error} = schemas.fromId.validate(req.query);
-		if (error) return validationFails(res, error);
-		const {userId} = req.user;
-		console.log(userId)
-		try {
-			await db.UserConnection.update({status: 3}, {where: {fromId, toId:userId}})
-			return res.status(200).json({
-				message: "Connection blocked",
-				success: true,
-			})
-		} catch (error) {
-			console.log(error);
-			return res.status(500).json({
-				message: "An error occured when blocking user request",
-				success: false
-			});
-		}
-	},
 
-	//onBlocked User....
-	
+	//onBlocked Userconnection....
 	onBlockChatConnection: async (req, res) => {
-		const {value: {fromId}, error} = schemas.fromId.validate(req.query);
-		if (error) return validationFails(res, error);
 		const {userId} = req.user;
 		console.log(userId)
 		try {
-			await db.UserConnection.update({status: 1}, {where: {fromId, toId:userId}})
+			await db.UserConnection.update({status: 1}, {where: {blocked_by:userId}})
 			return res.status(200).json({
 				message: "Connection onBlocked",
 				success: true,
@@ -166,11 +143,15 @@ module.exports = {
 		console.log(userId)
 		try {
 			const requests = await db.UserConnection.findAll({
+				
 				where: {
-					toId: userId,
+					[Op.or]:[
+						{toId:userId},
+						{fromId:userId}
+					],
 					status: 3
 				},
-				include: ['to']
+				include: ['by']
 			});
 			return res.status(200).json({
 				message: "Successful",

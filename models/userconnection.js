@@ -14,13 +14,15 @@ module.exports = (sequelize, DataTypes) => {
       UserConnection.belongsTo(models.User, {as: 'to', foreignKey: 'toId'});
       UserConnection.belongsTo(models.User, {as: 'from', foreignKey: 'fromId'});
       UserConnection.hasMany(models.Category, {as: 'categories', foreignKey: 'userConnectionId'});
+      UserConnection.belongsTo(models.User, {as: 'by', foreignKey:'blocked_by'})
 
     }
   }
   UserConnection.init({
     fromId: DataTypes.INTEGER,
     toId: DataTypes.INTEGER,
-    status: DataTypes.INTEGER
+    status: DataTypes.INTEGER,
+    blocked_by: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'UserConnection',

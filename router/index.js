@@ -41,12 +41,12 @@ router.post(
   Conn.rejectConnection
 )
 router.post("/connection/block", UserM.userMiddleware, Conn.blockConnection)
-router.post("/connection/block-chat", UserM.userMiddleware, Conn.blockChatConnection)
+// router.post("/connection/block-chat", UserM.userMiddleware, Conn.blockChatConnection)
 router.get("/connection/get-blocked-conn", UserM.userMiddleware, Conn.getMyBlokedConnection)
 router.post("/connection/onblocked-conn", UserM.userMiddleware, Conn.onBlockChatConnection)
 
 //categories routes
-router.post("/new-categories", Categories.createCategory)
+router.post("/new-categories",  Categories.createCategory)
 router.get("/category-per-user/:id", Categories.categoriesPerUser)
 router.post("/chat-per-category", Categories.chatPerCategory)
 router.delete("/delete-cart/:id", Categories.deleteCart)
