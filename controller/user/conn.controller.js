@@ -123,7 +123,17 @@ module.exports = {
 		const {userId} = req.user;
 		console.log(userId)
 		try {
-			await db.UserConnection.update({status: 1}, {where: {blocked_by:userId}})
+			await db.UserConnection.update({status: 1}, 
+				{where: {
+					[Op.and]:[
+						{
+							blocked_by:userId, 
+							id:req.body.id
+						}
+					]
+				}
+				
+			})
 			return res.status(200).json({
 				message: "Connection onBlocked",
 				success: true,
