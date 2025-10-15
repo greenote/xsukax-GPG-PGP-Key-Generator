@@ -62,7 +62,7 @@ const lastChat = async (req, res) =>{
            order:[
                ['createdAt', 'DESC']
            ],
-           include:['sender', 'receiver']
+           include:['sender', 'receiver', 'conn_id']
     })
     // get only the last message
     let lastArr = []
